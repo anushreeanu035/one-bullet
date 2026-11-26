@@ -241,7 +241,7 @@
       for (var r2 = 0; r2 < s.bullets.length; r2++) {
         var rb = s.bullets[r2];
         if (!rb.alive) continue;
-        rb.x = 200 + Math.random() * 320; rb.y = 130 + Math.random() * 60;
+        rb.x = 180 + ((s.bounces + r2) % 3) * 150; rb.y = 130 + ((s.bounces + r2) % 2) * 45;
         rb.speed = s.L.speed; rb.bounces = 0;
         aim(s, rb, false);
       }
@@ -273,7 +273,25 @@
     return s;
   }
 
+  /* If a bullet ever ends up inside a wall (a wall moved over it, or a split landed on an
+     edge), push it out through the nearest face. Without this it rattles in place forever. */
+  function unstick(b, rects) {
+    for (var i = 0; i < rects.length; i++) {
+      var r = rects[i];
+      if (b.x > r.x + 2 && b.x < r.x + r.w - 2 && b.y > r.y + 2 && b.y < r.y + r.h - 2) {
+        var dl = b.x - r.x, dr = r.x + r.w - b.x;
+        var dt2 = b.y - r.y, db = r.y + r.h - b.y;
+        var m = Math.min(dl, dr, dt2, db);
+        if (m === dl) { b.x = r.x - 1; if (b.vx > 0) b.vx = -b.vx; }
+        else if (m === dr) { b.x = r.x + r.w + 1; if (b.vx < 0) b.vx = -b.vx; }
+        else if (m === dt2) { b.y = r.y - 1; if (b.vy > 0) b.vy = -b.vy; }
+        else { b.y = r.y + r.h + 1; if (b.vy < 0) b.vy = -b.vy; }
+      }
+    }
+  }
+
   function moveBullet(s, b, rects, gdt) {
+    unstick(b, rects);
     // curve: bend toward the player while it flies
     if (s.L.curve) {
       var tx = s.player.x - b.x, ty = (s.player.y - 26) - b.y;
