@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>One Bullet — capture</title>
+<style>html,body{margin:0;background:#05070a;overflow:hidden}
+#f{position:absolute;left:0;top:0;width:720px;height:1280px;border:0}
+#log{position:fixed;right:8px;top:8px;z-index:9;color:#9ff3c9;font-family:monospace;font-size:12px;background:rgba(0,0,0,.6);padding:6px}</style>
+</head>
+<body>
+<iframe id="f" src="../index.html?level=9&chain=1&auto=1&hud=canvas"></iframe>
+<div id="log">waiting…</div>
+<script>
+(function () {
+  var seconds = parseFloat(new URLSearchParams(location.search).get('t') || '55');
+  var frame = document.getElementById('f');
+  var log = document.getElementById('log');
+  frame.addEventListener('load', function () {
+    setTimeout(function () {
+      var doc = frame.contentDocument;
+      var canvas = doc.querySelector('canvas');
+      if (!canvas) { log.textContent = 'no canvas'; return; }
+      log.textContent = 'canvas ' + canvas.width + 'x' + canvas.height;
+      var stream = canvas.captureStream(30);
+      var mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm';
+      var rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 9000000 });
+      var chunks = [];
+      rec.ondataavailable = function (e) { if (e.data.size) chunks.push(e.data); };
+      rec.onstop = function () {
+        var blob = new Blob(chunks, { type: 'video/webm' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'One Bullet rooms 9 to 12.webm';
+        document.body.appendChild(a);
+        a.click();
+        document.title = 'REC DONE ' + Math.round(blob.size / 1024) + 'KB';
+        log.textContent = 'done ' + Math.round(blob.size / 1024) + 'KB';
+      };
+      rec.start();
+      setTimeout(function () { rec.stop(); }, seconds * 1000);
+      document.title = 'RECORDING ' + seconds + 's';
+    }, 1400);
+  });
+})();
+</script>
+</body></html>

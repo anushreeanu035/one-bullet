@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#05070a">
+<title>One Bullet — slip the shot</title>
+<style>
+  :root{
+    --ink:#eaf3ff; --dim:#9db0c4; --faint:#6c8098;
+    --mint:#7ce8ff; --warm:#ffb36b; --bad:#ff5f4a;
+    --card:rgba(8,13,18,.9); --line:rgba(124,232,255,.2);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;background:#05070a;overflow:hidden;overscroll-behavior:none;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-user-select:none;user-select:none;}
+  #game{position:fixed;inset:0;}
+  #game canvas{display:block;touch-action:none;}
+
+  #ui{position:fixed;pointer-events:none;z-index:5;display:flex;flex-direction:column;justify-content:space-between;
+      padding:14px 18px 16px;}
+  .top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+  .brandy{font-size:10px;letter-spacing:.24em;color:var(--faint);text-transform:uppercase;}
+  .room{font-size:17px;letter-spacing:.05em;color:var(--ink);margin-top:5px;text-transform:uppercase;}
+  .meta{text-align:right;}
+  .dodge{font-size:19px;letter-spacing:.08em;color:var(--ink);font-variant-numeric:tabular-nums;}
+  .dodge b{color:var(--mint);}
+  .metasmall{font-size:10px;letter-spacing:.2em;color:var(--faint);text-transform:uppercase;margin-top:4px;}
+
+  .bottom{display:flex;flex-direction:column;align-items:center;gap:10px;}
+  .focuswrap{width:100%;max-width:420px;}
+  .focuslabel{display:flex;justify-content:space-between;font-size:9px;letter-spacing:.22em;
+      color:var(--faint);text-transform:uppercase;margin-bottom:5px;}
+  .focusbar{height:4px;border-radius:3px;background:rgba(255,255,255,.09);overflow:hidden;}
+  .focusfill{height:100%;width:100%;background:linear-gradient(90deg,#7ce8ff,#b6f4ff);border-radius:3px;
+      transition:background .2s;}
+  .focusfill.low{background:linear-gradient(90deg,#ff8a5c,#ff5f4a);}
+  .hint{font-size:13px;line-height:1.5;color:#b6c9d9;text-align:center;max-width:36ch;transition:opacity .6s;}
+
+  #panel-wrap{position:fixed;z-index:9;display:flex;align-items:center;justify-content:center;padding:24px;
+      pointer-events:none;opacity:0;transition:opacity .35s;}
+  #panel-wrap.on{pointer-events:auto;opacity:1;}
+  .card{width:min(340px,88vw);background:var(--card);border:1px solid var(--line);border-radius:20px;
+      padding:28px 24px 22px;text-align:center;backdrop-filter:blur(14px);
+      box-shadow:0 30px 80px rgba(0,0,0,.65);transform:translateY(10px) scale(.98);transition:transform .35s;}
+  #panel-wrap.on .card{transform:none;}
+  .eyebrow{font-size:10px;letter-spacing:.24em;color:var(--faint);text-transform:uppercase;}
+  .title{font-size:26px;line-height:1.15;color:var(--ink);margin:10px 0 0;font-weight:600;letter-spacing:-.01em;}
+  .sub{font-size:13.5px;line-height:1.55;color:var(--dim);margin:12px 0 0;}
+  .stat{font-size:11px;letter-spacing:.16em;color:var(--faint);text-transform:uppercase;margin-top:16px;}
+  .btn{margin-top:20px;width:100%;padding:15px 18px;border-radius:999px;border:1px solid rgba(124,232,255,.5);
+      background:linear-gradient(180deg,rgba(124,232,255,.18),rgba(124,232,255,.06));
+      color:#d9f7ff;font-size:14px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;
+      font-family:inherit;cursor:pointer;transition:transform .12s;}
+  .btn:active{transform:scale(.98);}
+  .ghost{margin-top:8px;background:none;border:none;color:var(--faint);font-size:11px;letter-spacing:.14em;
+      text-transform:uppercase;font-family:inherit;cursor:pointer;padding:8px;}
+</style>
+</head>
+<body>
+<div id="game"></div>
+
+<div id="ui">
+  <div class="top">
+    <div>
+      <div class="brandy">One Bullet</div>
+      <div class="room" id="roomName">—</div>
+    </div>
+    <div class="meta">
+      <div class="dodge"><b id="passCur">0</b> / <span id="passNeed">0</span></div>
+      <div class="metasmall">Dodged</div>
+    </div>
+  </div>
+  <div class="bottom">
+    <div class="focuswrap">
+      <div class="focuslabel"><span>Slip</span><span id="focusPct">100%</span></div>
+      <div class="focusbar"><div class="focusfill" id="focusFill"></div></div>
+    </div>
+    <div class="hint" id="hint"></div>
+  </div>
+</div>
+
+<div id="panel-wrap"><div class="card">
+  <div class="eyebrow" id="pEyebrow"></div>
+  <div class="title" id="pTitle"></div>
+  <div class="sub" id="pSub"></div>
+  <div class="stat" id="pStat"></div>
+  <button class="btn" id="pBtn"></button>
+  <button class="ghost" id="pGhost" style="display:none"></button>
+</div></div>
+
+<script src="phaser.min.js"></script>
+<script src="sim.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
